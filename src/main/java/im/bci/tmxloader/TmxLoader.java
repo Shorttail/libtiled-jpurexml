@@ -27,7 +27,6 @@ import com.github.asilvestre.jpurexml.XmlDoc;
 import com.github.asilvestre.jpurexml.XmlParseException;
 import com.github.asilvestre.jpurexml.XmlParser;
 import com.github.asilvestre.jpurexml.XmlTag;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -40,54 +39,28 @@ import java.util.ListIterator;
  */
 public class TmxLoader {
 
-    public TmxMap load(String xml) {
+    public void parseTmx(TmxMap map, String xml) {
         try {
             XmlDoc doc = XmlParser.parseXml(xml);
-            TmxMap map = new TmxMap();
             parseMap(doc.root, map);
             parseTilesets(doc.root, map);
-            parseExternalTilesets(map);
-            decodeLayerData(map);
-            return map;
-        } catch (XmlParseException | IOException ex) {
+        } catch (XmlParseException ex) {
             throw new RuntimeException("Cannot load tmx", ex);
         }
     }
 
-    private void parseMap(XmlTag xmlMap, TmxMap map) throws NumberFormatException {
-        map.setWidth(getMandatoryIntAttribute(xmlMap, "width"));
-        map.setHeight(getMandatoryIntAttribute(xmlMap, "height"));
-        map.setTilewidth(getMandatoryIntAttribute(xmlMap, "tilewidth"));
-        map.setTileheight(getMandatoryIntAttribute(xmlMap, "tileheight"));
-        map.setOrientation(TmxMapOrientation.valueOf(xmlMap.attributes.get("orientation").toUpperCase()));
-        map.setProperties(parseProperties(findChild(xmlMap, "properties")));
-        List<TmxLayer> layers = new ArrayList<>();
-        for (XmlTag child : xmlMap.children) {
-            if ("layer".equals(child.name)) {
-                TmxLayer layer = new TmxLayer();
-                parseLayer(child, layer);
-                layer.afterUnmarshal();
-                layers.add(layer);
-            }
+    public void parseTsx(TmxMap map, TmxTileset tileset, String xml) {
+        try {
+            parseTileset(XmlParser.parseXml(xml).root, map, tileset);
+            tileset.afterUnmarshal();
+            tileset.setReady(true);
+        } catch (XmlParseException ex) {
+            throw new RuntimeException("Cannot load tmx", ex);
         }
-        map.setLayers(layers);
     }
-
-    XmlTag findChild(XmlTag parent, String name) {
-        for (XmlTag child : parent.children) {
-            if (name.equals(child.name)) {
-                return child;
-            }
-        }
-        return null;
-    }
-
-    protected String openExternalTileset(String source) {
-        throw new RuntimeException("Not implemented");
-    }
-
-    private void decodeLayerData(TmxMap map) {
-        HashMap<TmxTileInstance, TmxTileInstance> tileInstancePool = new HashMap<>();
+    
+    public void decode(TmxMap map) {
+        HashMap<TmxTileInstance, TmxTileInstance> tileInstancePool = new HashMap<TmxTileInstance, TmxTileInstance>();
         for (TmxLayer layer : map.getLayers()) {
             int[][] data = new int[layer.getWidth()][layer.getHeight()];
             layer.getData().decodeTo(layer.getWidth(), layer.getHeight(), data);
@@ -120,25 +93,39 @@ public class TmxLoader {
                 }
             }
         }
+        map.setReady(true);
     }
 
-    private void parseExternalTilesets(TmxMap map) throws IOException, XmlParseException {
-        for (TmxTileset tileset : map.getTilesets()) {
-            final String source = tileset.getSource();
-            if (null != source) {
-                parseTileset(XmlParser.parseXml(openExternalTileset(source)).root, map, tileset);
-                String tilesetDir = source.substring(0, source.lastIndexOf('/') + 1);
-                final TmxImage image = tileset.getImage();
-                if (null != image) {
-                    tileset.getImage().setSource(tilesetDir + image.getSource());
-                }
-                tileset.afterUnmarshal();
+    private void parseMap(XmlTag xmlMap, TmxMap map) throws NumberFormatException {
+        map.setWidth(getMandatoryIntAttribute(xmlMap, "width"));
+        map.setHeight(getMandatoryIntAttribute(xmlMap, "height"));
+        map.setTilewidth(getMandatoryIntAttribute(xmlMap, "tilewidth"));
+        map.setTileheight(getMandatoryIntAttribute(xmlMap, "tileheight"));
+        map.setOrientation(TmxMapOrientation.valueOf(xmlMap.attributes.get("orientation").toUpperCase()));
+        map.setProperties(parseProperties(findChild(xmlMap, "properties")));
+        List<TmxLayer> layers = new ArrayList<TmxLayer>();
+        for (XmlTag child : xmlMap.children) {
+            if ("layer".equals(child.name)) {
+                TmxLayer layer = new TmxLayer();
+                parseLayer(child, layer);
+                layer.afterUnmarshal();
+                layers.add(layer);
             }
         }
+        map.setLayers(layers);
+    }
+
+    private XmlTag findChild(XmlTag parent, String name) {
+        for (XmlTag child : parent.children) {
+            if (name.equals(child.name)) {
+                return child;
+            }
+        }
+        return null;
     }
 
     private List<TmxProperty> parseProperties(XmlTag xmlProperties) {
-        List<TmxProperty> properties = new ArrayList<>();
+        List<TmxProperty> properties = new ArrayList<TmxProperty>();
         if (null != xmlProperties) {
             for (XmlTag child : xmlProperties.children) {
                 if ("property".equals(child.name)) {
@@ -153,7 +140,7 @@ public class TmxLoader {
     }
 
     private void parseTilesets(XmlTag xmlMap, TmxMap map) throws XmlParseException {
-        List<TmxTileset> tilesets = new ArrayList<>();
+        List<TmxTileset> tilesets = new ArrayList<TmxTileset>();
         for (XmlTag child : xmlMap.children) {
             if ("tileset".equals(child.name)) {
                 TmxTileset tileset = new TmxTileset();
@@ -164,11 +151,11 @@ public class TmxLoader {
                 } else {
                     parseTileset(child, map, tileset);
                     tileset.afterUnmarshal();
+                    tileset.setReady(true);
                 }
                 tilesets.add(tileset);
             }
         }
-
         map.setTilesets(tilesets);
     }
 
@@ -180,7 +167,7 @@ public class TmxLoader {
         tileset.setTileheight(getIntAttribute(xmlTileset, "tileheight", map.getTileheight()));
         tileset.setProperties(parseProperties(findChild(xmlTileset, "properties")));
         tileset.setImage(parseImage(findChild(xmlTileset, "image")));
-        List<TmxTile> tiles = new ArrayList<>();
+        List<TmxTile> tiles = new ArrayList<TmxTile>();
         for (XmlTag child : xmlTileset.children) {
             if ("tile".equals(child.name)) {
                 tiles.add(parseTile(tileset, child));

@@ -38,12 +38,20 @@ public class TmxTileset {
     private int tilewidth;
     private int tileheight;
     private int spacing, margin;
-    private List<TmxProperty> properties = new ArrayList<>();
+    private List<TmxProperty> properties = new ArrayList<TmxProperty>();
     private TmxImage image;
     private int firstgid;
-    private final TreeMap<Integer/*id*/, TmxTile> tilesById = new TreeMap<>();
-    private List<TmxTile> tiles = new ArrayList<>();
+    private final TreeMap<Integer/*id*/, TmxTile> tilesById = new TreeMap<Integer/*id*/, TmxTile>();
+    private List<TmxTile> tiles = new ArrayList<TmxTile>();
+    private boolean ready;
+    
+    public boolean isReady() {
+        return ready;
+    }
 
+    public void setReady(boolean ready) {
+        this.ready = ready;
+    }
     public String getSource() {
         return source;
     }
