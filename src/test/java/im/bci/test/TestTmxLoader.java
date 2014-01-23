@@ -58,10 +58,10 @@ public class TestTmxLoader {
                 tilesetParentDir = mapParentDir;
             }
             if (null != tileset.getImage()) {
-                tileset.getImage().setSource(new File(tilesetParentDir, tileset.getImage().getSource()).getCanonicalPath());
+                tileset.getImage().setSource(convertRelativeToAbsolutePath(tilesetParentDir, tileset.getImage().getSource()));
             }
             for (TmxTile tile : tileset.getTiles()) {
-                tile.getFrame().getImage().setSource(new File(tilesetParentDir, tile.getFrame().getImage().getSource()).getCanonicalPath());
+                tile.getFrame().getImage().setSource(convertRelativeToAbsolutePath(tilesetParentDir, tile.getFrame().getImage().getSource()));
             }
         }
         loader.decode(map);
@@ -71,6 +71,13 @@ public class TestTmxLoader {
         Assert.assertEquals(32, map.getTilewidth());
         Assert.assertEquals(32, map.getTileheight());
         Assert.assertEquals(1, map.getLayers().size());
+    }
+    
+    private String convertRelativeToAbsolutePath(File parentDir, String relativePath) throws IOException {
+        if(new File(relativePath).isAbsolute()) {
+            return relativePath;
+        }
+        return new File(parentDir, relativePath).getCanonicalPath();        
     }
 
     private String loadText(File f) throws IOException {
