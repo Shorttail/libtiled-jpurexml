@@ -23,8 +23,6 @@
  */
 package im.bci.tmxloader;
 
-import java.util.Scanner;
-
 /**
  *
  * @author devnewton
