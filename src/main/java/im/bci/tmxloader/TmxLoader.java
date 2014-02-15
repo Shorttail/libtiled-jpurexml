@@ -87,6 +87,7 @@ public class TmxLoader {
                                     tileInstancePool.put(instance, instance);
                                 }
                                 layer.setTileAt(x, y, instance);
+                                break;
                             }
                         }
                     }
@@ -145,8 +146,8 @@ public class TmxLoader {
             if ("tileset".equals(child.name)) {
                 TmxTileset tileset = new TmxTileset();
                 String source = child.attributes.get("source");
+                tileset.setFirstgid(getMandatoryIntAttribute(child, "firstgid"));
                 if (null != source) {
-                    tileset.setFirstgid(getMandatoryIntAttribute(child, "firstgid"));
                     tileset.setSource(source);
                 } else {
                     parseTileset(child, map, tileset);
