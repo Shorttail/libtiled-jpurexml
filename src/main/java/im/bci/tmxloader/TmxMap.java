@@ -32,14 +32,15 @@ import java.util.List;
  */
 public class TmxMap {
 
+    private boolean ready;
     private int width;
     private int height;
     private int tilewidth;
     private int tileheight;
     private TmxMapOrientation orientation;
-    private List<TmxTileset> tilesets = new ArrayList<>();
-    private List<TmxProperty> properties = new ArrayList<>();
-    private List<TmxLayer> layers = new ArrayList<>();
+    private List<TmxTileset> tilesets = new ArrayList<TmxTileset>();
+    private List<TmxProperty> properties = new ArrayList<TmxProperty>();
+    private List<TmxLayer> layers = new ArrayList<TmxLayer>();
 
     public TmxMapOrientation getOrientation() {
         return orientation;
@@ -107,5 +108,22 @@ public class TmxMap {
 
     public String getProperty(String name, String defaultValue) {
         return TmxUtils.getProperty(properties, name, defaultValue);
+    }
+
+    public boolean isReady() {
+        return ready;
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
+    }
+    
+    public boolean canDecode() {
+        for(TmxTileset ts : tilesets) {
+            if(!ts.isReady()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

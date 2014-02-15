@@ -20,8 +20,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -30,7 +29,7 @@ THE SOFTWARE. -->
     </parent>
     <groupId>im.bci</groupId>
     <artifactId>libtiled-jpurexml</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.3-SNAPSHOT</version>
     <name>libtiled-jpurexml</name>
     <packaging>jar</packaging>
     <description>libtiled-jpurexml is a java library to parse [Tiled](http://www.mapeditor.org) tmx maps.</description>
@@ -39,7 +38,8 @@ THE SOFTWARE. -->
         <connection>scm:git:git@github.com:devnewton/libtiled-jpurexml.git</connection>
         <developerConnection>scm:git:git@github.com:devnewton/libtiled-jpurexml.git</developerConnection>
         <url>git@github.com:devnewton/libtiled-jpurexml.git</url>
-    </scm>
+      <tag>HEAD</tag>
+  </scm>
     <licenses>
         <license>
             <name>MIT</name>
@@ -62,6 +62,12 @@ THE SOFTWARE. -->
             <groupId>com.github.asilvestre</groupId>
             <artifactId>jpurexml</artifactId>
             <version>0.10</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>

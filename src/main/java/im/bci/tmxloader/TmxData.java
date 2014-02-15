@@ -23,8 +23,6 @@
  */
 package im.bci.tmxloader;
 
-import java.util.Scanner;
-
 /**
  *
  * @author devnewton
@@ -51,24 +49,21 @@ public class TmxData {
     }
 
     public void decodeTo(int width, int height, int[][] data) {
-        switch (encoding) {
-            case "csv":
-                decodeCsvTo(width, height, data);
-                break;
-            default:
-                throw new RuntimeException(
-                        "Unsupported tiled layer data encoding: " + encoding);
+        if ("csv".equals(encoding)) {
+            decodeCsvTo(width, height, data);
+        } else {
+            throw new RuntimeException(
+                    "Unsupported tiled layer data encoding: " + encoding);
         }
     }
 
     private void decodeCsvTo(int width, int height, int[][] gidArray) {
-        try (Scanner scanner = new Scanner(this.data.trim())) {
-            scanner.useDelimiter("[\\s]*,[\\s]*");
-            for (int y = 0; y < height; ++y) {
-                for (int x = 0; x < width; ++x) {
-                    String str = scanner.next();
-                    gidArray[x][y] = Integer.parseInt(str);
-                }
+        String[] values = this.data.replaceAll("[\\s]", "").split(",");
+        int index = 0;
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                String str = values[index++];
+                gidArray[x][y] = Integer.parseInt(str);
             }
         }
     }
