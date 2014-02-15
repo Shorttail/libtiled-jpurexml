@@ -38,7 +38,6 @@ THE SOFTWARE. -->
         <connection>scm:git:git@github.com:devnewton/libtiled-jpurexml.git</connection>
         <developerConnection>scm:git:git@github.com:devnewton/libtiled-jpurexml.git</developerConnection>
         <url>git@github.com:devnewton/libtiled-jpurexml.git</url>
-      <tag>HEAD</tag>
   </scm>
     <licenses>
         <license>
